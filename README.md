@@ -32,4 +32,8 @@ npm run preview
 
 The theme defaults to the system preference and persists in localStorage. Suggested prompts populate the composer. Submit a prompt or attach a PNG, JPEG or WebP (up to 10 MB) to create a local draft in Recent analysis. Attachment metadata and drafts live only in memory and reset on refresh. Files are never sent anywhere. Streak, XP and level values are labeled demo data.
 
-This foundation contains no backend, authentication, database, AI API integration, or screenshot analysis.
+A FastAPI and PostgreSQL backend foundation is available in `backend/`, with a users model, Alembic migration, and health endpoint. Authentication, AI API integration, and screenshot analysis are not implemented.
+
+## Built with Codex
+
+Codex is being used to implement, test, and iterate on TradeWise AI through small, focused development tasks.
