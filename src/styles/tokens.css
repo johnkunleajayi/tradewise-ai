@@ -1,26 +1,50 @@
+/* Semantic colors follow the persisted data-theme attribute in useTheme. */
 :root {
   color-scheme: dark;
-  --bg: #080e18;
+  --canvas: #080e18;
   --sidebar: #0b121e;
   --surface: #101925;
-  --raised: #152130;
-  --text: #eff4fc;
-  --muted: #94a3b8;
-  --border: #223042;
+  --raised: #162231;
+  --ink: #eff4fc;
+  --muted: #9baabe;
+  --line: #253246;
   --accent: #43d7f5;
-  --tint: rgba(67, 215, 245, 0.09);
-  --shadow: 0 15px 45px #00000018;
+  --tint: rgb(67 215 245 / 7%);
+  --panel-shadow: 0 4px 24px rgb(0 0 0 / 8%);
 }
 :root[data-theme="light"] {
   color-scheme: light;
-  --bg: #f3f6fa;
-  --sidebar: #fff;
-  --surface: #fff;
+  --canvas: #f4f7fb;
+  --sidebar: #ffffff;
+  --surface: #ffffff;
   --raised: #edf3f9;
-  --text: #152238;
+  --ink: #152238;
   --muted: #596b80;
-  --border: #dbe4ef;
+  --line: #dbe4ef;
   --accent: #007eaa;
-  --tint: rgba(0, 126, 170, 0.07);
-  --shadow: 0 15px 45px #243a5310;
+  --tint: rgb(0 126 170 / 6%);
+  --panel-shadow: 0 4px 24px rgb(36 58 83 / 4%);
+}
+
+@theme inline {
+  --font-sans: "Inter Variable", "Inter", "Segoe UI", sans-serif;
+  --color-canvas: var(--canvas);
+  --color-sidebar: var(--sidebar);
+  --color-surface: var(--surface);
+  --color-raised: var(--raised);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-tint: var(--tint);
+  --shadow-panel: var(--panel-shadow);
+}
+
+/* Preserve the existing mobile, compact sidebar and full sidebar boundaries. */
+@theme {
+  --breakpoint-*: initial;
+  --breakpoint-sm: 42.5625rem;
+  --breakpoint-lg: 59.4375rem;
+  --breakpoint-xl: 75.0625rem;
+  --breakpoint-2xl: 100rem;
 }

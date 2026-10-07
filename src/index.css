@@ -1,58 +1,34 @@
+@import "tailwindcss" source(none);
 @import "./styles/tokens.css";
-* {
-  box-sizing: border-box;
-}
-body {
-  margin: 0;
-  min-width: 320px;
-  font-family: Inter, "Segoe UI", sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  font-size: 14px;
-  -webkit-font-smoothing: antialiased;
-}
-button,
-input,
-textarea {
-  font: inherit;
-}
-button,
-a {
-  -webkit-tap-highlight-color: transparent;
-}
-button {
-  cursor: pointer;
-}
-button:disabled {
-  cursor: not-allowed;
-  opacity: 0.45;
-}
-a {
-  color: inherit;
-  text-decoration: none;
-}
-button {
-  color: inherit;
-}
-button:focus-visible,
-a:focus-visible,
-textarea:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 4px;
-}
-h1,
-h2,
-h3,
-p {
-  margin: 0;
-}
-svg {
-  flex-shrink: 0;
-}
-button {
-  border: 0;
-}
-::selection {
-  background: #147c9b;
-  color: white;
+@source "./";
+
+@layer base {
+  html {
+    @apply motion-safe:scroll-smooth;
+  }
+  body {
+    @apply m-0 min-w-0 bg-canvas font-sans text-sm text-ink antialiased;
+  }
+  button,
+  a {
+    -webkit-tap-highlight-color: transparent;
+  }
+  button {
+    @apply cursor-pointer disabled:cursor-not-allowed disabled:opacity-45;
+  }
+  button,
+  a,
+  textarea {
+    @apply focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent;
+  }
+  button,
+  a {
+    @apply motion-safe:transition-colors motion-safe:duration-150;
+  }
+  svg {
+    @apply shrink-0;
+  }
+  ::selection {
+    @apply bg-accent text-canvas;
+  }
 }
