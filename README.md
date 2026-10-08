@@ -21,12 +21,12 @@ npm run preview
 
 ## Structure
 
-- `src/layout` â€” app shell, navigation and header
-- `src/ui` â€” reusable branding and section headings
-- `src/features/dashboard` â€” hero, progress, prompt composer and recent drafts
-- `src/hooks` â€” persistent theme state
-- `src/types` â€” shared frontend types
-- `src/styles` â€” theme tokens and focused stylesheets, including responsive rules
+- `src/layout` — app shell, navigation and header
+- `src/ui` — reusable branding and section headings
+- `src/features/dashboard` — hero, progress, prompt composer and recent drafts
+- `src/hooks` — persistent theme state
+- `src/types` — shared frontend types
+- `src/styles` — theme tokens and focused stylesheets, including responsive rules
 
 ## Preview behavior
 
