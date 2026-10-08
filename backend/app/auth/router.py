@@ -12,6 +12,7 @@ from starlette.concurrency import run_in_threadpool
 from app.auth.client import get_google_client
 from app.auth.config import get_google_oauth_settings
 from app.auth.cookies import clear_cookie, read_cookie, set_cookie
+from app.auth.frontend import frontend_return_url
 from app.auth.route import PrivateAuthRoute
 from app.auth.schemas import CurrentUser, GoogleProfile
 from app.auth.security import require_trusted_origin
@@ -31,6 +32,8 @@ GoogleClient = Annotated[StarletteOAuth2App, Depends(get_google_client)]
 
 @router.get("/google/login")
 async def google_login(request: Request, db: DatabaseSession, google: GoogleClient):
+    return_to = frontend_return_url(request.query_params.get("return_to"))
+    request.scope["frontend_return_to"] = return_to
     request.scope["session"] = {}
     try:
         response = await google.authorize_redirect(
@@ -38,6 +41,8 @@ async def google_login(request: Request, db: DatabaseSession, google: GoogleClie
         )
     except (OAuthError, HTTPError, ValueError):
         raise HTTPException(502, "Google login temporarily unavailable") from None
+    if return_to:
+        request.session["frontend_return_to"] = return_to
     ttl = get_session_settings().oauth_ttl_seconds
     token = await run_in_threadpool(
         save_attempt, db, request.session, ttl, read_cookie(request, "oauth")
@@ -51,6 +56,7 @@ async def google_callback(request: Request, db: DatabaseSession, google: GoogleC
     data = await run_in_threadpool(consume_attempt, db, read_cookie(request, "oauth"))
     if not data:
         raise HTTPException(400, "Login expired or invalid; start Google login again")
+    request.scope["frontend_return_to"] = frontend_return_url(data.pop("frontend_return_to", None))
     request.scope["session"] = data
     try:
         token = await google.authorize_access_token(request)
@@ -65,7 +71,9 @@ async def google_callback(request: Request, db: DatabaseSession, google: GoogleC
     session_token = await run_in_threadpool(
         finish_login, db, profile, read_cookie(request, "session")
     )
-    response = RedirectResponse("/api/auth/me", status_code=303)
+    response = RedirectResponse(
+        request.scope.get("frontend_return_to") or "/api/auth/me", status_code=303
+    )
     clear_cookie(response, "oauth")
     set_cookie(response, "session", session_token, get_session_settings().session_ttl_seconds)
     return response

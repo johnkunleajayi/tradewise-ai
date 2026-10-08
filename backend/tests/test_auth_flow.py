@@ -255,3 +255,64 @@ def test_credentialed_cors_is_restricted(flow):
         headers={"Origin": "https://evil.example", "Access-Control-Request-Method": "POST"},
     )
     assert response.status_code == 400
+
+
+def test_frontend_login_returns_to_allowlisted_origin(flow):
+    client, _, provider = flow
+    response = client.get(
+        "/api/auth/google/login",
+        params={"return_to": "http://localhost:5173"},
+        follow_redirects=False,
+    )
+    query = parse_qs(urlsplit(response.headers["location"]).query)
+    provider.nonce = query["nonce"][0]
+    provider.challenge = query["code_challenge"][0]
+    response = client.get(
+        "/api/auth/google/callback",
+        params={"state": query["state"][0], "code": "test"},
+        follow_redirects=False,
+    )
+    assert response.status_code == 303
+    assert response.headers["location"] == "http://localhost:5173"
+    assert client.get("/api/auth/me").status_code == 200
+
+
+def test_frontend_consent_failure_returns_safe_error(flow):
+    client, _, _ = flow
+    response = client.get(
+        "/api/auth/google/login",
+        params={"return_to": "http://localhost:5173"},
+        follow_redirects=False,
+    )
+    query = parse_qs(urlsplit(response.headers["location"]).query)
+    response = client.get(
+        "/api/auth/google/callback",
+        params={
+            "state": query["state"][0],
+            "error": "access_denied",
+            "error_description": "private-detail",
+        },
+        follow_redirects=False,
+    )
+    assert response.status_code == 303
+    assert response.headers["location"] == "http://localhost:5173?auth_error=failed"
+    assert "private-detail" not in response.text
+    assert client.get("/api/auth/me").status_code == 401
+
+
+@pytest.mark.parametrize(
+    "target",
+    [
+        "https://evil.example",
+        "http://localhost:5173.evil.example",
+        "http://localhost:5173/path",
+        "//localhost:5173",
+    ],
+)
+def test_frontend_redirect_rejects_untrusted_targets(flow, target):
+    client, db, _ = flow
+    response = client.get(
+        "/api/auth/google/login", params={"return_to": target}, follow_redirects=False
+    )
+    assert response.status_code == 400
+    assert db.scalar(select(OAuthAttempt)) is None

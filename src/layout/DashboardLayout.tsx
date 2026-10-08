@@ -4,14 +4,23 @@ import {
   LayoutDashboard,
   History,
   Sparkles,
-  Sun,
-  Moon,
   ShieldCheck,
 } from "lucide-react";
 import { Brand } from "../ui/Brand";
-import { useTheme } from "../hooks/useTheme";
-export function DashboardLayout({ children }: { children: ReactNode }) {
-  const { theme, toggleTheme } = useTheme();
+import { ThemeToggle } from "../ui/ThemeToggle";
+import { UserIdentity } from "../features/auth/UserIdentity";
+import type { AuthUser } from "../types/auth";
+export function DashboardLayout({
+  children,
+  user,
+  onLogout,
+  signingOut,
+}: {
+  children: ReactNode;
+  user: AuthUser;
+  onLogout: () => void;
+  signingOut: boolean;
+}) {
   return (
     <div className="min-h-screen sm:flex">
       <a
@@ -79,29 +88,15 @@ export function DashboardLayout({ children }: { children: ReactNode }) {
       <div className="min-w-0 flex-1 sm:ml-[76px] lg:ml-[210px] xl:ml-[242px]">
         <header className="flex h-16 items-center justify-between gap-4 border-b border-line px-5 sm:h-[84px] sm:px-7 xl:px-10">
           <div className="text-[11px] text-muted sm:text-xs [&>span]:mx-2 [&>span]:text-line sm:[&>span]:mx-4 [&>strong]:font-medium [&>strong]:text-ink">
-            Workspace <span>/</span> <strong>Overview</strong>
+            <span className="max-[399px]:hidden">Workspace</span> <span>/</span>{" "}
+            <strong>Overview</strong>
           </div>
-          <div className="flex items-center gap-3.5 xl:gap-5">
+          <div className="flex shrink-0 items-center gap-2 sm:gap-3.5 xl:gap-5">
             <span className="hidden text-[10px] font-medium tracking-widest text-muted xl:block">
               FRONTEND PREVIEW
             </span>
-            <button
-              className="flex min-h-9 items-center gap-2 rounded-lg border border-line bg-surface px-3 py-2 text-[11px] font-medium hover:border-accent hover:bg-tint sm:text-xs"
-              onClick={toggleTheme}
-              aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
-            >
-              {theme === "dark" ? <Sun size={17} /> : <Moon size={17} />}
-              <span>{theme === "dark" ? "Light" : "Dark"} mode</span>
-            </button>
-            <div
-              className="hidden items-center gap-2.5 border-l border-line pl-3.5 text-xs sm:flex lg:pl-5 [&>span:last-child]:hidden lg:[&>span:last-child]:inline"
-              title="Demo profile"
-            >
-              <span className="grid size-9 place-items-center rounded-full border border-line bg-raised text-[11px] font-medium text-accent">
-                JD
-              </span>
-              <span>Demo trader</span>
-            </div>
+            <ThemeToggle />
+            <UserIdentity user={user} onLogout={onLogout} busy={signingOut} />
           </div>
         </header>
         <main id="main">{children}</main>

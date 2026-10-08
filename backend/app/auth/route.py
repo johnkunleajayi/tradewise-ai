@@ -1,5 +1,5 @@
 from fastapi import HTTPException, Request
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, RedirectResponse
 from fastapi.routing import APIRoute
 from sqlalchemy.exc import SQLAlchemyError
 
@@ -18,6 +18,9 @@ class PrivateAuthRoute(APIRoute):
                 response = JSONResponse(
                     {"detail": "Authentication temporarily unavailable"}, status_code=503
                 )
+            return_to = request.scope.get("frontend_return_to")
+            if response.status_code >= 400 and return_to:
+                response = RedirectResponse(f"{return_to}?auth_error=failed", status_code=303)
             response.headers["Cache-Control"] = "no-store"
             response.headers["Referrer-Policy"] = "no-referrer"
             return response

@@ -4,7 +4,7 @@ import type { LocalDraft } from "../../types/dashboard";
 import { AskWorkspace } from "./AskWorkspace";
 import { ProgressCards } from "./ProgressCards";
 import { RecentAnalysis } from "./RecentAnalysis";
-export function Dashboard() {
+export function Dashboard({ name }: { name: string }) {
   const [drafts, setDrafts] = useState<LocalDraft[]>([]);
   return (
     <div
@@ -17,8 +17,9 @@ export function Dashboard() {
             <span />
             YOUR NEXT CHAPTER IN TRADING
           </div>
-          <h1 className="mt-4 mb-3 text-[30px] leading-tight font-semibold tracking-[-0.04em] sm:text-[clamp(30px,2.7vw,42px)] [&>span]:text-accent">
-            Good to see you, trader<span>.</span>
+          <h1 className="mt-4 mb-3 break-words text-[30px] leading-tight font-semibold tracking-[-0.04em] sm:text-[clamp(30px,2.7vw,42px)] [&>span]:text-accent">
+            Good to see you, {name.trim().split(/\s+/)[0]}
+            <span>.</span>
           </h1>
           <p className="max-w-80 text-[13px] leading-7 text-muted sm:max-w-none sm:text-sm">
             Less noise. More perspective. Let’s build your trading edge.
